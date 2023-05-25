@@ -23,8 +23,8 @@ public class JpaConfig {
     @Bean
     public DataSource dataSource() {
 
-        return new DriverManagerDataSource("jdbc:h2:~/test_db;DATABASE_TO_UPPER=false;MODE=LEGACY;" +
-                "INIT=RUNSCRIPT FROM 'classpath:/script/schema.sql'","sa","");
+        return new DriverManagerDataSource("jdbc:h2:mem:test_db;DATABASE_TO_UPPER=false;MODE=LEGACY;" +
+                "INIT=RUNSCRIPT FROM 'classpath:/script/schema.sql'");
     }
 
     @Bean
