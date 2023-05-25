@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+//TODO 주석과 테스트 코드를 확인하여, Proxy 객체에 대해 알아보기
 @Slf4j
 @Transactional
 @ContextHierarchy(
