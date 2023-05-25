@@ -210,9 +210,10 @@ class JpaTestRepositoryTest {
      */
 
     /**
-     * proxy 객체가 detach 되기 전에 필드에 접근하지 않아 콘솔에 SQL 이 출력되지 않았고, 이후 해당 객체의 필드에 접근을 시도하면 예외 발생
+     * proxy 객체가 detach 되기 전에 필드에 접근하지 않아 데이터 베이스를 조회하지 않았고, 이후 해당 객체의 필드에 접근을 시도하면 예외 발생
      */
     @Test
+    @DisplayName("준영속 이후 데이터 조회")
     void test7() {
         Data reference = dataRepository.getReferenceById(1L);
 
@@ -222,9 +223,10 @@ class JpaTestRepositoryTest {
     }
 
     /**
-     * proxy 객체가 detach 되기 전에 연관 관계 Entity 필드에 접근하면서 SQL 이 출력되었고, 이후 해당 객체의 필드에 접근을 시도해도 예외가 발생하지 않음
+     * proxy 객체가 detach 되기 전에 연관 관계 Entity 필드에 접근하면서 데이터 베이스를 조회하였고, 이후 해당 객체의 필드에 접근을 시도해도 예외가 발생하지 않음
      */
     @Test
+    @DisplayName("준영속 이전 데이터 조회 후, 준영속 이후 다시 조회")
     void test8() {
         Data reference = dataRepository.getReferenceById(1L);
         log.info("reference Detail Value : {}", reference.getDataDetail().getValue());
@@ -236,9 +238,10 @@ class JpaTestRepositoryTest {
 
     /**
      * proxy 객체가 detach 되기 전에 필드에 접근하였지만 ID 필드를 조회하였기 때문에
-     * SQL 이 출력되지 않았고 이후 해당 객체의 필드에 접근을 시도해도 예외가 발생.
+     * 데이터 베이스를 조회하지 않았고, 이후 해당 객체의 필드에 접근을 시도해도 예외가 발생.
      */
     @Test
+    @DisplayName("준영속 이전 ID 필드 조회 후, 준영속 이후 다시 조회")
     void test9() {
         Data reference = dataRepository.getReferenceById(1L);
         log.info("reference ID : {}", reference.getId());
