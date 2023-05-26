@@ -182,26 +182,26 @@ class JpaTestRepositoryTest {
     void test6() {
 
 
-        System.out.println("\n ************* SQL 발생 여부");
-        System.out.println("getReferenceById() 메서드 - start");
+        System.out.println("\n ************* SQL 발생 여부 *************");
+        System.out.println("************* getReferenceById() 메서드 - start *************");
         Data reference = dataRepository.getReferenceById(1L);
-        System.out.println("getReferenceById() 메서드 - end\n");
+        System.out.println("************* getReferenceById() 메서드 - end *************\n");
 
-        System.out.println("\n ************* findById() 메서드 - start");
+        System.out.println("\n ************* findById() 메서드 - start *************");
         Data entity = dataRepository.findById(2L).orElseThrow();
-        System.out.println("findById() 메서드 - end\n");
+        System.out.println("************* findById() 메서드 - end *************\n");
 
         System.out.println("\n ************* 생성되는 클래스의 형태, reference = Data$HibernateProxy, entity = Data");
         log.info("reference Class : {}", reference.getClass());
         log.info("entity Class : {}", entity.getClass());
 
-        System.out.println("\n ************* Proxy 객체 필드 접근시 SQL 발생");
+        System.out.println("\n ************* Proxy 객체 필드 접근시 SQL 발생 *************");
         log.info("reference Name : {}", reference.getName());
 
-        System.out.println("\n ************* 연관관계 매핑시 FetchType.EAGER 객체 필드 접근시 SQL 발생 여부");
+        System.out.println("\n ************* 연관관계 매핑시 FetchType.EAGER 객체 필드 접근시 SQL 발생 여부 *************");
         log.info("reference Information Created At: {}", reference.getDataInformation().getCreatedAt());
 
-        System.out.println("\n ************* 연관관계 매핑시 FetchType.LAZY 객체 필드 접근시 SQL 발생 여부");
+        System.out.println("\n ************* 연관관계 매핑시 FetchType.LAZY 객체 필드 접근시 SQL 발생 여부 *************");
         log.info("reference Detail Value : {}", reference.getDataDetail().getValue());
 
 
