@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>demo2</artifactId>
+    <artifactId>jpa-proxy</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>demo2</name>
-    <packaging>war</packaging>
+    <name>jpa-proxy</name>
+    <packaging>jar</packaging>
 
-    <description>demo2</description>
+    <description>JPA Proxy Examples</description>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -116,5 +116,9 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <finalName>Jpa-Proxy</finalName>
+    </build>
 
 </project>
