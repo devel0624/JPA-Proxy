@@ -77,7 +77,7 @@ class JpaTestRepositoryTest {
      * <pre>
      * getReferenceById 메서드는 @ID 값만을 가진 Proxy 객체를 생성하여 반환한다.
      * 그래서 findById 와는 다르게 메서드 호출 시점에서 데이터베이스 조회를 하지 않는다.
-     * 따라서 데이터베이스에 존재하지 않는 데이터의 @ID 값이어도 Entity 객체를 생성할 수 있기 때문에, NullPointerException 이 발생하지 않는 것을 확인할 수 있다.
+     * 따라서 조회하고자 하는 @ID 를 가진 데이터가 실제로 데이터베이스에 존재하지 않아도 Entity 객체를 생성할 수 있기 때문에, Exception 이 발생하지 않는 것을 확인할 수 있다.
      * 콘솔을 확인하여 메서드 호출 시점에 데이터베이스를 조회하는 SQL 문이 출력되는지 확인.
      * </pre>
      */
@@ -97,7 +97,7 @@ class JpaTestRepositoryTest {
 
     /**
      * <pre>
-     * Proxy 객체는 @ID 필드를 제외한 필드에 접근하는 시점에 데이터베이스를 조회한다.
+     * Proxy 객체의 @ID 필드를 제외한 필드에 접근하는 시점에 데이터베이스를 조회한다.
      * getId() 와 getName() 메서드를 실행할 때, 로그에 SQL 이 출력되는지 확인
      * </pre>
      */
@@ -209,7 +209,7 @@ class JpaTestRepositoryTest {
 
     /**
      * <pre>
-     * `GetReferenceById()` 와 `Fetch 전략이 LAZY 로 지정된 연관관계` 같은 proxy 객체 사용시 주의
+     * `getReferenceById`, `Fetch 전략이 LAZY 로 지정된 연관관계` 와 같이 proxy 객체가 반환되는 경우
      * 다음 테스트들은 Entity Manager 의 detach 메서드를 이용해 Transaction 이 종료되었음을 가정하고
      * proxy 객체의 필드 접근 시점에 따른 차이를 확인하는 테스트들이다.
      * </pre>
