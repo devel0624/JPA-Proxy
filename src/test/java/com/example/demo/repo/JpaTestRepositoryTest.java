@@ -75,8 +75,8 @@ class JpaTestRepositoryTest {
 
     /**
      * <pre>
-     * getReferenceById 메서드는 바로 객체를 반환받을 수 있다.
-     * 하지만 findById 와는 다르게 메서드 호출 시점에서 데이터베이스 조회를 하지 않는다. 대신 @ID 값만을 가진 Proxy 객체를 생성하여 반환한다.
+     * getReferenceById 메서드는 @ID 값만을 가진 Proxy 객체를 생성하여 반환한다.
+     * 그래서 findById 와는 다르게 메서드 호출 시점에서 데이터베이스 조회를 하지 않는다.
      * 따라서 데이터베이스에 존재하지 않는 데이터의 @ID 값이어도 Entity 객체를 생성할 수 있기 때문에, NullPointerException 이 발생하지 않는 것을 확인할 수 있다.
      * 콘솔을 확인하여 메서드 호출 시점에 데이터베이스를 조회하는 SQL 문이 출력되는지 확인.
      * </pre>
@@ -155,14 +155,14 @@ class JpaTestRepositoryTest {
      *
      * 1.  
      * findById() 는 메서드 실행과 함께 데이터베이스에 조회를 요청한다.
-     * getReferenceById() 는 proxy 객체를 반환하기 때문에 조회를 요청하지 않음.
+     * getReferenceById() 는 proxy 객체를 반환하기 때문에 조회를 요청하지 않는다.
      *
      * 2.
      * findById() 는 Optional<T> 을 반환하거나 Optional.orElse 메서드 체이닝을 사용할 수 있다.
      *
      * orElse 사용시 다음과 같이 작성 가능. 자세한 내용은 Optional 클래스 참고
      *
-     *         findById().orElseThrow(); => IllegalArgumentException 발생
+     *         findById().orElseThrow(); => NoSuchElementException 발생
      *         findById().orElseThrow(() -> new RuntimeException());
      *         findById().orElseThrow(RuntimeException::new);
      *         findById().orElse(${Default Entity});
@@ -182,14 +182,14 @@ class JpaTestRepositoryTest {
     void test6() {
 
 
-        System.out.println("\n ************* SQL 발생 여부 *************");
+        System.out.println("\n************* SQL 발생 여부 *************");
         System.out.println("************* getReferenceById() 메서드 - start *************");
         Data reference = dataRepository.getReferenceById(1L);
         System.out.println("************* getReferenceById() 메서드 - end *************\n");
 
         System.out.println("\n ************* findById() 메서드 - start *************");
         Data entity = dataRepository.findById(2L).orElseThrow();
-        System.out.println("************* findById() 메서드 - end *************\n");
+        System.out.println(" ************* findById() 메서드 - end *************\n");
 
         System.out.println("\n ************* 생성되는 클래스의 형태, reference = Data$HibernateProxy, entity = Data");
         log.info("reference Class : {}", reference.getClass());
@@ -209,20 +209,18 @@ class JpaTestRepositoryTest {
 
     /**
      * <pre>
-     * `GetReferenceById()` 와 `Fetch 전략이 LAZY 로 지정된 연관관계` 같은 proxy 객체 사용시 주의점
-     * proxy 객체는 Entity Manager 가 Transaction 내에서 관리하기 때문에, 해당 Transaction 내에서 데이터를 조회하지 않은 상태로
-     * Transaction 이 종료되면, 이후 proxy 객체 필드에 접근을 시도할 때, LazyInitializationException 예외가 발생한다.
-     *
-     *
+     * `GetReferenceById()` 와 `Fetch 전략이 LAZY 로 지정된 연관관계` 같은 proxy 객체 사용시 주의
+     * 다음 테스트들은 Entity Manager 의 detach 메서드를 이용해 Transaction 이 종료되었음을 가정하고
+     * proxy 객체의 필드 접근 시점에 따른 차이를 확인하는 테스트들이다.
      * </pre>
      */
 
     /**
-     * detach 전에 proxy 객체의 필드에 접근하지 않아, 데이터 베이스를 조회하지 않았고
-     * 이후 해당 객체의 필드에 접근을 시도하면 예외 발생
+     * proxy 객체는 영속성 컨텍스트에 관리되는 동안 데이터에 접근하지 않았다면
+     * 이후 Transaction 이 종료되고 detach 상태가 된 proxy 객체의 필드에 접근하면 LazyInitializationException 을 발생시킨다.
      */
     @Test
-    @DisplayName("준영속 이후 데이터 조회")
+    @DisplayName("준영속 상태가 된 이후 데이터 조회")
     void test7() {
         Data reference = dataRepository.getReferenceById(1L);
 
@@ -232,11 +230,11 @@ class JpaTestRepositoryTest {
     }
 
     /**
-     * proxy 객체가 detach 되기 전에 연관 관계 Entity 필드에 접근하면서 데이터 베이스를 조회하였고,
-     * 이후 해당 객체의 필드에 접근을 시도해도 예외가 발생하지 않음
+     * test8은 proxy 객체가 detach 되기 전에 연관 관계 Entity 필드에 접근하면서 데이터 베이스를 조회하였고,
+     * 이후 해당 객체의 필드에 접근을 시도해도 예외가 발생하지 않음.
      */
     @Test
-    @DisplayName("준영속 이전 데이터 조회 후, 준영속 이후 다시 조회")
+    @DisplayName("준영속 되기 이전 데이터 조회 후, 준영속 이후 다시 조회")
     void test8() {
         Data reference = dataRepository.getReferenceById(1L);
         log.info("reference Detail Value : {}", reference.getDataDetail().getValue());
@@ -247,7 +245,7 @@ class JpaTestRepositoryTest {
     }
 
     /**
-     * proxy 객체가 detach 되기 전에 필드에 접근하였지만 @ID 필드를 조회하였기 때문에
+     * test9는 proxy 객체가 detach 되기 전에 필드에 접근하였지만 @ID 필드를 조회하였기 때문에
      * 데이터 베이스를 조회하지 않았고, 이후 해당 객체의 필드에 접근하면 예외가 발생.
      */
     @Test
