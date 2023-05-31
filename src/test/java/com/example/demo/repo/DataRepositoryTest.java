@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
         @ContextConfiguration(classes = {JpaConfig.class})
 )
 @ExtendWith(SpringExtension.class)
-class JpaTestRepositoryTest {
+class DataRepositoryTest {
 
     @Autowired
     DataRepository dataRepository;
