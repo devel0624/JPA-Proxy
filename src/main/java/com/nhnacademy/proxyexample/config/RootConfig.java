@@ -1,6 +1,6 @@
-package com.example.demo.config;
+package com.nhnacademy.proxyexample.config;
 
-import com.example.demo.Base;
+import com.nhnacademy.proxyexample.Base;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 

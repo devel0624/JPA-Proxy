@@ -1,6 +1,6 @@
-package com.example.demo.config;
+package com.nhnacademy.proxyexample.config;
 
-import com.example.demo.repo.RepositoryBase;
+import com.nhnacademy.proxyexample.repo.RepositoryBase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -31,7 +31,7 @@ public class JpaConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
         emf.setDataSource(dataSource);
-        emf.setPackagesToScan("com.example.demo.entity");
+        emf.setPackagesToScan("com.nhnacademy.proxyexample.entity");
         emf.setJpaVendorAdapter(jpaVendorAdapters());
         emf.setJpaProperties(jpaProperties());
 

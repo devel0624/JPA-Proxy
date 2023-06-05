@@ -1,13 +1,18 @@
-package com.example.demo.repo;
+package com.nhnacademy.proxyexample.repo;
 
-import com.example.demo.config.JpaConfig;
-import com.example.demo.entity.Data;
+import com.nhnacademy.proxyexample.config.JpaConfig;
+import com.nhnacademy.proxyexample.entity.Data;
+import com.nhnacademy.proxyexample.entity.DataDetail;
+import com.nhnacademy.proxyexample.entity.DataInformation;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -16,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,8 +38,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(SpringExtension.class)
 class DataRepositoryTest {
 
+
+    protected static final Logger divider = LoggerFactory.getLogger("divider");
+    
     @Autowired
     DataRepository dataRepository;
+
+    @Autowired
+    DataDetailRepository dataDetailRepository;
+
+    @Autowired
+    DataInformationRepository dataInformationRepository;
 
     @Autowired
     EntityManager entityManager;
@@ -50,7 +65,7 @@ class DataRepositoryTest {
 
         assertThat(list, not(empty()));
 
-        list.forEach(x -> log.error("Data ID : {}", x.getId()));
+        list.forEach(x -> log.info("Data ID : {}", x.getId()));
     }
 
     /**
@@ -64,10 +79,10 @@ class DataRepositoryTest {
     @DisplayName("Find By Id 메서드 조회")
     void test2() {
 
-        System.out.println("\n************************** findById 메서드 호출 시작 **************************");
+        divider.info(" {} ","findById 메서드 호출 시작");
         Optional<Data> existedData = dataRepository.findById(1L);
         Optional<Data> notExistedData = dataRepository.findById(100L);
-        System.out.println("************************** findById 메서드 호출 끝 **************************\n");
+        divider.info(" {} ","findById 메서드 호출 끝");
 
         assertThat(existedData.isPresent(), is(true));
         assertThat(notExistedData.isPresent(), is(false));
@@ -85,10 +100,10 @@ class DataRepositoryTest {
     @DisplayName("Get Reference By Id 메서드 조회")
     void test3() {
 
-        System.out.println("\n************************** getReferenceById 메서드 호출 시작 **************************");
+        divider.info(" {} ","getReferenceById 메서드 호출 시작");
         Data existedData = dataRepository.getReferenceById(1L);
         Data notExistedData = dataRepository.getReferenceById(100L);
-        System.out.println("************************** getReferenceById 메서드 호출 끝 **************************\n");
+        divider.info(" {} ","getReferenceById 메서드 호출 끝");
 
         assertThat(existedData, notNullValue());
         assertThat(notExistedData, notNullValue());
@@ -109,13 +124,13 @@ class DataRepositoryTest {
         assertThat(proxy, notNullValue());
 
         try {
-            System.out.println("\n************************** existedData.getId() 메서드 호출 시작 **************************");
+            divider.info("{}", "existedData.getId() 메서드 호출 시작");
             log.info("Existed Data ID : {}", proxy.getId());
-            System.out.println("************************** existedData.getId() 메서드 호출 끝 **************************\n");
+            divider.info("{}", "existedData.getId() 메서드 호출 끝");
 
-            System.out.println("\n************************** existedData.getName() 메서드 호출 시작 **************************");
+            divider.info("{}", "existedData.getName() 메서드 호출 시작");
             log.info("Existed Data Name : {}", proxy.getName());
-            System.out.println("************************** existedData.getName() 메서드 호출 끝 **************************\n");
+            divider.info("{}", "existedData.getName() 메서드 호출 끝");
 
         }catch (EntityNotFoundException e){
             log.error("Error Message : {}", e.getMessage());
@@ -136,13 +151,13 @@ class DataRepositoryTest {
         assertThat(notExistedData, notNullValue());
 
         try {
-            System.out.println("\n************************** notExistedData.getId() 메서드 호출 시작 **************************");
+            divider.info("{}", "notExistedData.getId() 메서드 호출 시작");
             log.info("Not Existed Data ID : {}", notExistedData.getId());
-            System.out.println("************************** notExistedData.getId() 메서드 호출 끝 **************************\n");
+            divider.info("{}", "notExistedData.getId() 메서드 호출 끝");
 
-            System.out.println("\n************************** notExistedData.getName() 메서드 호출 시작 **************************");
+            divider.info("{}", "notExistedData.getName() 메서드 호출 시작");
             log.info("Not Existed Data Name : {}", notExistedData.getName());
-            System.out.println("************************** notExistedData.getName() 메서드 호출 끝 **************************\n");
+            divider.info("{}", "notExistedData.getName() 메서드 호출 끝");
 
         }catch (EntityNotFoundException e){
             log.error("Error Message : {}", e.getMessage());
@@ -151,9 +166,9 @@ class DataRepositoryTest {
 
     /**
      * <pre>
-     * 이전 테스트들을 바탕으로 정리  
+     * 이전 테스트들을 바탕으로 정리
      *
-     * 1.  
+     * 1.
      * findById() 는 메서드 실행과 함께 데이터베이스에 조회를 요청한다.
      * getReferenceById() 는 proxy 객체를 반환하기 때문에 조회를 요청하지 않는다.
      *
@@ -169,9 +184,9 @@ class DataRepositoryTest {
      *         findById().orElseGet( lambda function );
      *
      *
-     * getReferenceById() 는 Entity 로 반환 받을 수 있으나, 실제로는 proxy 객체가 반환된다.  
+     * getReferenceById() 는 Entity 로 반환 받을 수 있으나, 실제로는 proxy 객체가 반환된다.
      *
-     * 3.  
+     * 3.
      * proxy 객체는 @ID 외의 필드 접근 시점에, 데이터베이스에 조회를 요청한다.
      * 연관관계 맵핑 시, FetchType.LAZY 로 지정한 Entity 도 Proxy 객체이므로 같은 방식으로 동작한다.
      *
@@ -181,27 +196,26 @@ class DataRepositoryTest {
     @DisplayName("차이점 정리")
     void test6() {
 
-
-        System.out.println("\n************* SQL 발생 여부 *************");
-        System.out.println("************* getReferenceById() 메서드 - start *************");
+        divider.info("{}", "SQL 발생 여부");
+        divider.info("{}", "getReferenceById() 메서드 - start");
         Data reference = dataRepository.getReferenceById(1L);
-        System.out.println("************* getReferenceById() 메서드 - end *************\n");
+        divider.info("{}", "getReferenceById() 메서드 - end");
 
-        System.out.println("\n ************* findById() 메서드 - start *************");
+        divider.info("{}", "findById() 메서드 - start");
         Data entity = dataRepository.findById(2L).orElseThrow();
-        System.out.println(" ************* findById() 메서드 - end *************\n");
+        divider.info("{}", "findById() 메서드 - end");
 
-        System.out.println("\n ************* 생성되는 클래스의 형태, reference = Data$HibernateProxy, entity = Data");
+        divider.info("{}", "생성되는 클래스의 형태, reference = Data$HibernateProxy, entity = Data");
         log.info("reference Class : {}", reference.getClass());
         log.info("entity Class : {}", entity.getClass());
 
-        System.out.println("\n ************* Proxy 객체 필드 접근시 SQL 발생 *************");
+        divider.info("{}","Proxy 객체 필드 접근시 SQL 발생");
         log.info("reference Name : {}", reference.getName());
 
-        System.out.println("\n ************* 연관관계 매핑시 FetchType.EAGER 객체 필드 접근시 SQL 발생 여부 *************");
+        divider.info("{}", "연관관계 매핑시 FetchType.EAGER 객체 필드 접근시 SQL 발생 여부");
         log.info("reference Information Created At: {}", reference.getDataInformation().getCreatedAt());
 
-        System.out.println("\n ************* 연관관계 매핑시 FetchType.LAZY 객체 필드 접근시 SQL 발생 여부 *************");
+        divider.info("{}", "연관관계 매핑시 FetchType.LAZY 객체 필드 접근시 SQL 발생 여부");
         log.info("reference Detail Value : {}", reference.getDataDetail().getValue());
 
 
@@ -257,5 +271,96 @@ class DataRepositoryTest {
         entityManager.detach(reference);
 
         assertThrows(LazyInitializationException.class, reference::getName);
+    }
+
+
+    /**
+     * 마지막으로 findById 와 getReferenceById 를 사용하여 DataDetail, DataInformation 을 필드로 가진 Data 를 저장할 때
+     * 콘솔에 출력되는 SQL을 확인해보고 어떠한 차이가 있는지 확인합니다.
+     */
+    @Test
+    @DisplayName("findById 로 Database 조회 후 save")
+    void saveDataWithFindById() {
+        Optional<DataDetail> dataDetail = dataDetailRepository.findById(1L);
+        Optional<DataInformation> dataInformation = dataInformationRepository.findById(1L);
+
+        if (dataDetail.isPresent() && dataInformation.isPresent()){
+            Data data = Data.builder()
+                    .name("testData")
+                    .dataDetail(dataDetail.get())
+                    .dataInformation(dataInformation.get())
+                    .build();
+
+            Data actual = dataRepository.save(data);
+            
+            assertThat(actual, notNullValue());
+        }
+
+    }
+
+    @Test
+    @DisplayName("getReferenceById 로 Database 조회 후 save")
+    void saveDataWithGetReferenceById() {
+        DataDetail dataDetail = dataDetailRepository.getReferenceById(1L);
+        DataInformation dataInformation = dataInformationRepository.getReferenceById(1L);
+
+        Data data = Data.builder()
+                .name("testData")
+                .dataDetail(dataDetail)
+                .dataInformation(dataInformation)
+                .build();
+
+        Data actual = dataRepository.save(data);
+        assertThat(actual, notNullValue());
+    }
+
+    /**
+     *  아래의 테스트들은 존재하지 않는 DataDetail, DataInformation 에 대해 Data 를 저장하고자 할 때 예외처리 차이를 볼 수 있다.
+     *  findById 는 메서드 호출 시점에 NoSuchElementException 예외가 발생한다.
+     */
+    @Test
+    @DisplayName("findById 를 사용한 save 시 에러 발생")
+    void failToSaveDataWithFindById() {
+
+        DataDetail dataDetail = null;
+        DataInformation dataInformation = null;
+
+        try {
+            dataDetail = dataDetailRepository.findById(100L).orElseThrow();
+            dataInformation = dataInformationRepository.findById(100L).orElseThrow();
+
+            log.info("상단 findById 메서드에서 존재하지 않는 데이터에 대해 에러가 발생하기 때문에 이 라인은 실행되지 않는다.");
+
+            Data data = Data.builder()
+                    .name("testData")
+                    .dataDetail(dataDetail)
+                    .dataInformation(dataInformation)
+                    .build();
+
+            Data actual = dataRepository.save(data);
+        } catch (Exception e) {
+            assertThat(e, instanceOf(NoSuchElementException.class));
+        }
+
+    }
+
+    @Test
+    @DisplayName("getReferenceById 를 사용한 save 시 에러 발생")
+    void failToSaveDataWithGetReferenceById() {
+        DataDetail dataDetail = dataDetailRepository.getReferenceById(100L);
+        DataInformation dataInformation = dataInformationRepository.getReferenceById(100L);
+
+        Data data = Data.builder()
+                .name("testData")
+                .dataDetail(dataDetail)
+                .dataInformation(dataInformation)
+                .build();
+
+        try {
+            Data actual = dataRepository.save(data);
+            log.info(" Save 메서드가 실행되는 시점에 데이터베이스에서 외래키 제약 조건에 의해 예외가 발생한다.");
+        } catch (Exception e){
+            assertThat(e, instanceOf(DataIntegrityViolationException.class));
+        }
     }
 }

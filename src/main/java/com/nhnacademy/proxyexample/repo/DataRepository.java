@@ -1,6 +1,6 @@
-package com.example.demo.repo;
+package com.nhnacademy.proxyexample.repo;
 
-import com.example.demo.entity.Data;
+import com.nhnacademy.proxyexample.entity.Data;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

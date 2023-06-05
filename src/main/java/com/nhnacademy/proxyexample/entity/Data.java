@@ -1,12 +1,15 @@
-package com.example.demo.entity;
+package com.nhnacademy.proxyexample.entity;
 
-import lombok.Getter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @Table(name = "`Data`")
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Data {
 
     @Id

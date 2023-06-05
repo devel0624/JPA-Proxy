@@ -1,4 +1,4 @@
-package com.example.demo.entity;
+package com.nhnacademy.proxyexample.entity;
 
 import lombok.Getter;
 
