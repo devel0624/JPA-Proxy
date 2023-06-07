@@ -38,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(SpringExtension.class)
 class DataRepositoryTest {
 
-
     protected static final Logger divider = LoggerFactory.getLogger("divider");
     
     @Autowired
@@ -133,7 +132,7 @@ class DataRepositoryTest {
             divider.info("{}", "existedData.getName() 메서드 호출 끝");
 
         }catch (EntityNotFoundException e){
-            log.error("Error Message : {}", e.getMessage());
+            log.error("\n Exception : {} \n Message : {} ", e.getClass(), e.getMessage());
         }
     }
 
@@ -160,7 +159,7 @@ class DataRepositoryTest {
             divider.info("{}", "notExistedData.getName() 메서드 호출 끝");
 
         }catch (EntityNotFoundException e){
-            log.error("Error Message : {}", e.getMessage());
+            log.error("\n Exception : {} \n Message : {} ", e.getClass(), e.getMessage());
         }
     }
 
@@ -205,7 +204,7 @@ class DataRepositoryTest {
         Data entity = dataRepository.findById(2L).orElseThrow();
         divider.info("{}", "findById() 메서드 - end");
 
-        divider.info("{}", "생성되는 클래스의 형태, reference = Data$HibernateProxy, entity = Data");
+        divider.info("{}", "생성되는 클래스의 형태(디버그로 확인해볼 수 있음), reference = Data$HibernateProxy, entity = Data");
         log.info("reference Class : {}", reference.getClass());
         log.info("entity Class : {}", entity.getClass());
 
@@ -269,6 +268,7 @@ class DataRepositoryTest {
         log.info("reference ID : {}", reference.getId());
 
         entityManager.detach(reference);
+
 
         assertThrows(LazyInitializationException.class, reference::getName);
     }
@@ -340,6 +340,7 @@ class DataRepositoryTest {
             Data actual = dataRepository.save(data);
         } catch (Exception e) {
             assertThat(e, instanceOf(NoSuchElementException.class));
+            log.error("\n Exception : {} \n Message : {} ", e.getClass(), e.getMessage());
         }
 
     }
@@ -361,6 +362,7 @@ class DataRepositoryTest {
             log.info(" Save 메서드가 실행되는 시점에 데이터베이스에서 외래키 제약 조건에 의해 예외가 발생한다.");
         } catch (Exception e){
             assertThat(e, instanceOf(DataIntegrityViolationException.class));
+            log.error("\n Exception : {} \n Message : {} ", e.getClass(), e.getMessage());
         }
     }
 }
